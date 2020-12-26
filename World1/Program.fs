@@ -1,5 +1,13 @@
 ﻿open System
 
+type IOccupant =
+    abstract Action: unit -> unit
+
+type Player =
+    interface IOccupant with
+        override _.Action() =
+            printfn "Player> action"
+
 type TurnKeeper() =
     let mutable turn = 0
 
