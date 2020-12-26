@@ -1,11 +1,11 @@
 ﻿open System
 
 type IOccupant =
-    abstract Action: unit -> unit
+    abstract member Action: unit -> unit
 
-type Player =
+type Player() =
     interface IOccupant with
-        override _.Action() =
+        member _.Action() =
             printfn "Player> action"
 
 type TurnKeeper() =
@@ -13,21 +13,26 @@ type TurnKeeper() =
 
     member _.CurrentTrurn = turn
 
-    member _.OrderOccupants(): unit =
+    member _.OrderOccupants(occupants: List<'IOccupant>): unit =
         turn <- turn + 1
         printfn "TurnKeeper[%d]> order occupants" turn
+        for occupant in occupants do
+            (occupant :> IOccupant).Action()
 
-type World(turnKeeper: TurnKeeper) =
+type World(turnKeeper: TurnKeeper, player: Player) =
     let turnKeeper = turnKeeper
+    // let _occupants = List.empty<'IOccupant>
+    let _occupants = [player]
 
     member _.Start(): unit =
         printfn "start World ..."
-        turnKeeper.OrderOccupants()
+        turnKeeper.OrderOccupants(_occupants)
 
 [<EntryPoint>]
 let main argv =
     printfn "Hello World from F#!"
+    let player = new Player()
     let turnKeeper = new TurnKeeper()
-    let world = new World(turnKeeper)
+    let world = new World(turnKeeper, player)
     world.Start()
     0
