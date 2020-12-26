@@ -20,13 +20,17 @@ type TurnKeeper() =
             (occupant :> IOccupant).Action()
 
 type World(turnKeeper: TurnKeeper, player: Player) =
+    let turnMaxValue = 5
+
     let turnKeeper = turnKeeper
     // let _occupants = List.empty<'IOccupant>
     let _occupants = [player]
 
     member _.Start(): unit =
         printfn "start World ..."
-        turnKeeper.OrderOccupants(_occupants)
+
+        for i = 1 to turnMaxValue do
+            turnKeeper.OrderOccupants(_occupants)
 
 [<EntryPoint>]
 let main argv =
