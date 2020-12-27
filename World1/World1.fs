@@ -1,5 +1,23 @@
 ﻿namespace World1
 
+type IPlace =
+    abstract member Name: unit -> string
+    abstract member LinkedPlaces: unit -> List<IPlace>
+
+type Village(name: string, linkedPlaces: List<IPlace>) =
+    let linkedPlaces = linkedPlaces
+
+    interface IPlace with
+        member _.Name() = name
+        member _.LinkedPlaces() = linkedPlaces
+
+type Dungeon(name: string, linkedPlaces: List<IPlace>) =
+    let linkedPlaces = linkedPlaces
+
+    interface IPlace with
+        member _.Name() = name
+        member _.LinkedPlaces() = linkedPlaces
+
 type IOccupant =
     abstract member Action: unit -> unit
 
@@ -13,22 +31,21 @@ type TurnKeeper() =
 
     member _.CurrentTrurn = turn
 
-    member _.OrderOccupants(occupants: List<'IOccupant>): unit =
+    member _.OrderOccupants(occupants: List<IOccupant>): unit =
         turn <- turn + 1
         printfn "TurnKeeper[%d]> order occupants" turn
         for occupant in occupants do
-            (occupant :> IOccupant).Action()
+            occupant.Action()
 
 type World(turnKeeper: TurnKeeper, player: Player) =
     let turnMaxValue = 5
 
     let turnKeeper = turnKeeper
-    // let _occupants = List.empty<'IOccupant>
-    let _occupants = [player]
+    let occupants: List<IOccupant> = [player]
 
     member _.Start(): unit =
         printfn "start World ..."
 
         for i = 1 to turnMaxValue do
-            turnKeeper.OrderOccupants(_occupants)
+            turnKeeper.OrderOccupants(occupants)
 
